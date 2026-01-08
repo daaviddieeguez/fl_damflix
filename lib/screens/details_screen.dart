@@ -8,7 +8,12 @@ class DetailsScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          _CustomAppBar()
+          _CustomAppBar(),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [Text('Hola')]
+            )
+          )
         ],
       )
     );
@@ -45,6 +50,33 @@ class _CustomAppBar extends StatelessWidget {
           placeholder: AssetImage('assets/jar-loading.gif'),
           image: NetworkImage('https://oracleoffilm.com/wp-content/uploads/1970/01/5-things-you-might-not-know-about-empire-strikes-back.jpg')
         ),
+      ),
+    );
+  }
+}
+
+class _InfoPelicula extends StatelessWidget {
+  const _InfoPelicula({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 20),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadiusGeometry.circular(20),
+            child: FadeInImage(
+              placeholder: AssetImage('assets/no-image.jpg'),
+              image: NetworkImage('https://pics.filmaffinity.com/star_wars_episode_v_the_empire_strikes_back-701818523-large.jpg'),
+              height: 150,
+            ),
+          ),
+          Column(
+
+          )
+        ],
       ),
     );
   }
