@@ -1,3 +1,4 @@
+import 'package:fl_damflix/widgets/cast_carrousel.dart';
 import 'package:flutter/material.dart';
 
 class DetailsScreen extends StatelessWidget {
@@ -10,7 +11,7 @@ class DetailsScreen extends StatelessWidget {
         slivers: [
           _CustomAppBar(),
           SliverList(
-            delegate: SliverChildListDelegate([_InfoPelicula(), _Overview()]),
+            delegate: SliverChildListDelegate([_InfoPelicula(), _Overview(), CastCarrousel()]),
           ),
         ],
       ),
