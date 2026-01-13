@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:fl_damflix/models/now_playing_response.dart';
 
 class MoviesProvider extends ChangeNotifier{
 
 String _apiKey = 'f13f15ad46ff8743695b6f4ab37a82c7';
 String _baseUrl = 'api.themoviedb.org';
 String _languaje = 'es-ES';
+
+List<Result> onDisplayMovies = [];
 
   MoviesProvider() {
     print('MoviesProvider ha sido inicializado');
@@ -25,8 +28,13 @@ String _languaje = 'es-ES';
     );
     var response = await http.get(url);
 
-    final Map<String, dynamic> decodeData = json.decode( response.body );
+    // final Map<String, dynamic> decodeData = json.decode( response.body );
+    final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
+    
+    onDisplayMovies = nowPlayingResponse.results;
 
-    print( decodeData['results'][4] );
+    notifyListeners();
+
+    //print( nowPlayingResponse.results[0] );
   }
 }
