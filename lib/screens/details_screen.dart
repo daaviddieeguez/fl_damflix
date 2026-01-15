@@ -1,20 +1,26 @@
 import 'package:fl_damflix/models/models.dart';
+import 'package:fl_damflix/providers/movies_provider.dart';
 import 'package:fl_damflix/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DetailsScreen extends StatelessWidget {
   const DetailsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-
     final Result movie = ModalRoute.of(context)!.settings.arguments as Result;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           _CustomAppBar(movie: movie),
           SliverList(
-            delegate: SliverChildListDelegate([_InfoPelicula(movie: movie), _Overview(movie: movie), CastCarrousel()]),
+            delegate: SliverChildListDelegate([
+              _InfoPelicula(movie: movie),
+              _Overview(movie: movie),
+              CastCarrousel(),
+              _TrailerButton(movieId: movie.id)
+            ]),
           ),
         ],
       ),
@@ -56,9 +62,7 @@ class _CustomAppBar extends StatelessWidget {
         centerTitle: true,
         background: FadeInImage(
           placeholder: AssetImage('assets/jar-loading.gif'),
-          image: NetworkImage(
-            movie.fullBackdropPath,
-          ),
+          image: NetworkImage(movie.fullBackdropPath),
         ),
       ),
     );
@@ -81,9 +85,7 @@ class _InfoPelicula extends StatelessWidget {
             borderRadius: BorderRadiusGeometry.circular(20),
             child: FadeInImage(
               placeholder: AssetImage('assets/no-image.jpg'),
-              image: NetworkImage(
-                movie.fullPosterImg,
-              ),
+              image: NetworkImage(movie.fullPosterImg),
               height: 150,
             ),
           ),
@@ -110,7 +112,7 @@ class _InfoPelicula extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
-            
+
                 Row(
                   children: [
                     Icon(Icons.star_rate_sharp, size: 30, color: Colors.orange),
@@ -140,10 +142,73 @@ class _Overview extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(20),
-      child: Text(
-        movie.overview,
-        textAlign: TextAlign.justify,
-      ),
+      child: Text(movie.overview, textAlign: TextAlign.justify),
+    );
+  }
+}
+
+class _TrailerButton extends StatelessWidget {
+  final int movieId;
+
+  const _TrailerButton({required this.movieId});
+
+  @override
+  Widget build(BuildContext context) {
+    // 1. Obtenemos el provider (listen: false porque está dentro de un FutureBuilder y no necesitamos redibujar por notificaciones)
+    final moviesProvider = Provider.of<MoviesProvider>(context, listen: false);
+
+    return FutureBuilder(
+      future: moviesProvider.getMovieVideos(movieId),
+      builder: (_, AsyncSnapshot<List<Video>> snapshot) {
+        
+        // Mientras carga, mostramos un indicador pequeño o nada
+        if (!snapshot.hasData) {
+          return Container(
+            height: 50,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          );
+        }
+
+        final videos = snapshot.data!;
+        
+        // 2. Lógica de Backend en el Frontend: Buscar el trailer correcto
+        // Intentamos buscar uno que sea de YouTube y tipo 'Trailer'
+        // Si no, cogemos el primero que haya.
+        final videoHtml = videos.firstWhere(
+            (video) => video.site == 'YouTube' && video.type == 'Trailer',
+            orElse: () => Video(
+                iso6391: '', iso31661: '', name: 'No trailer', 
+                key: '', site: '', size: 0, type: '', 
+                official: false, publishedAt: DateTime.now(), id: '')
+        );
+        
+        // Si la key está vacía, es que no encontró nada válido
+        if (videoHtml.key.isEmpty) {
+          return SizedBox(); // No mostramos nada si no hay video
+        }
+
+        return Container(
+          margin: EdgeInsets.only(top: 20, bottom: 0),
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              // AQUÍ LA ACCIÓN
+              print('Reproducir video ID: ${videoHtml.key}');
+              // Más adelante aquí usarás url_launcher para abrir YouTube:
+              // launchUrl(Uri.parse('https://www.youtube.com/watch?v=${videoHtml.key}'));
+            },
+            icon: Icon(Icons.play_circle_fill_outlined, size: 30),
+            label: Text('Ver Tráiler', style: TextStyle(fontSize: 18)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade900, // Color rojo YouTube
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -10,6 +10,7 @@ final String _languaje = 'es-ES';
 
 List<Result> onDisplayMovies = [];
 List<Result> popularMovies = [];
+Map<int, List<Video>> moviesVideos = {};
 
   MoviesProvider() {
     print('MoviesProvider ha sido inicializado');
@@ -48,5 +49,36 @@ List<Result> popularMovies = [];
     popularMovies = popularResponse.results;
 
     notifyListeners();
+  }
+
+  // Importante: Cambia el retorno a Future<List<Video>>
+  // Asegúrate de importar tu modelo: import 'package:fl_damflix/models/models.dart';
+
+  Future<List<Video>> getMovieVideos(int movieId) async {
+    
+    // 1. Optimización: Comprobar caché (para no gastar datos a lo tonto)
+    if (moviesVideos.containsKey(movieId)) {
+      return moviesVideos[movieId]!;
+    }
+
+    print('Pidiendo videos para la peli: $movieId');
+
+    // 2. Construcción de URL
+    var url = Uri.https(_baseUrl, '/3/movie/$movieId/videos', {
+      'api_key': _apiKey,
+      'language': _languaje, // Ojo: a veces los trailers solo están en inglés ('en-US')
+    });
+
+    // 3. Petición HTTP
+    final response = await http.get(url);
+
+    // 4. Mapeo usando TU clase nueva
+    final videosResponse = VideosResponse.fromJson(response.body);
+    
+    // 5. Guardar en mapa (Caché)
+    // Guardamos la lista completa de resultados
+    moviesVideos[movieId] = videosResponse.results;
+
+    return videosResponse.results;
   }
 }
