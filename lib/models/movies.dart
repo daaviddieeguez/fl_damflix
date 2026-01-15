@@ -71,10 +71,16 @@ class Result {
         "vote_count": voteCount,
     };
     
-    // Tu getter personalizado
     get fullPosterImg {
       if (posterPath != '') {
         return 'https://image.tmdb.org/t/p/w500$posterPath';
+      }
+      return 'https://i.stack.imgur.com/GNhxO.png';
+    }
+
+    get fullBackdropPath {
+      if (backdropPath != '') {
+        return 'https://image.tmdb.org/t/p/w500$backdropPath';
       }
       return 'https://i.stack.imgur.com/GNhxO.png';
     }
