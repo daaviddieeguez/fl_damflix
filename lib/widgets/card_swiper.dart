@@ -2,6 +2,7 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:fl_damflix/models/models.dart';
 import 'package:flutter/material.dart';
 
+
 class CardSwiper extends StatelessWidget {
   const CardSwiper({super.key, required this.movies});
 
@@ -38,7 +39,7 @@ class CardSwiper extends StatelessWidget {
           print( movie.posterPath );
 
           return GestureDetector(
-            onTap: () => Navigator.pushNamed(context, 'details', arguments: movie),
+            onTap: () => Navigator.pushNamed(context, 'details', arguments: 'movie-instance'),
             child: ClipRRect(
               borderRadius: BorderRadiusGeometry.circular(20),
               child: FadeInImage(

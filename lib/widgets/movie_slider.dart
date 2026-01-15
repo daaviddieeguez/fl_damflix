@@ -1,15 +1,18 @@
+import 'package:fl_damflix/models/models.dart';
 import 'package:flutter/material.dart';
 
 class MovieSlider extends StatelessWidget {
-  const MovieSlider({super.key});
+  const MovieSlider({super.key, required this.movies});
+
+  final List<Result> movies;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       height: 275,
-      //color: Colors.yellow,
 
+      //color: Colors.yellow,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -24,9 +27,12 @@ class MovieSlider extends StatelessWidget {
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: 20,
+              itemCount: movies.length,
               itemBuilder: (context, index) {
-                return _MoviePoster();
+                final movie = movies[index];
+                print(movie.posterPath);
+
+                return _MoviePoster(movie: movie,);
               },
             ),
           ),
@@ -37,7 +43,9 @@ class MovieSlider extends StatelessWidget {
 }
 
 class _MoviePoster extends StatelessWidget {
-  const _MoviePoster({super.key});
+  const _MoviePoster({required this.movie});
+
+  final Result movie;
 
   @override
   Widget build(BuildContext context) {
@@ -50,13 +58,17 @@ class _MoviePoster extends StatelessWidget {
         //Poster
         children: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, 'details', arguments: 'movie-instance'),
+            onTap: () => Navigator.pushNamed(
+              context,
+              'details',
+              arguments: 'movie-instance',
+            ),
             child: ClipRRect(
               borderRadius: BorderRadiusGeometry.circular(20),
               child: FadeInImage(
                 placeholder: AssetImage('assets/no-image.jpg'),
                 image: NetworkImage(
-                  'https://m.media-amazon.com/images/M/MV5BNGI0MDI4NjEtOWU3ZS00ODQyLWFhYTgtNGYxM2ZkM2Q2YjE3XkEyXkFqcGc@._V1_.jpg',
+                  movie.fullPosterImg,
                 ),
                 width: 130,
                 height: 190,
@@ -65,7 +77,7 @@ class _MoviePoster extends StatelessWidget {
             ),
           ),
           Text(
-            'La guerra de las galaxias. Episodio V: El imperio contrataca',
+            movie.title,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
           ),

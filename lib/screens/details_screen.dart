@@ -1,4 +1,4 @@
-import 'package:fl_damflix/widgets/cast_carrousel.dart';
+import 'package:fl_damflix/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class DetailsScreen extends StatelessWidget {
@@ -20,7 +20,7 @@ class DetailsScreen extends StatelessWidget {
 }
 
 class _CustomAppBar extends StatelessWidget {
-  const _CustomAppBar({super.key});
+  const _CustomAppBar();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class _CustomAppBar extends StatelessWidget {
 }
 
 class _InfoPelicula extends StatelessWidget {
-  const _InfoPelicula({super.key});
+  const _InfoPelicula();
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +117,7 @@ class _InfoPelicula extends StatelessWidget {
 }
 
 class _Overview extends StatelessWidget {
-  const _Overview({super.key});
+  const _Overview();
 
   @override
   Widget build(BuildContext context) {
